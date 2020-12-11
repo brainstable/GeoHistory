@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
   <script src="data/locations.js" text="text/javascript"></script>
-  <script src="data/locations.geojson" type="text/javascript"></script>
+  <script src="data/poligon_died_locations.geojson" type="text/javascript"></script>
   <script src="data/died_locations.geojson" type="text/javascript"></script>
   <script src="data/life_locations.geojson" type="text/javascript"></script>
 
@@ -42,6 +42,10 @@
     map.setView([y, x], 14);
 
     //===============================================
+
+    var poligonDiedLocationsLayer = L.geoJson(poligonDiedLocations).addTo(map);
+
+    //===============================================
     function locStyle(feature){
         return {
             radiys : 1000,
@@ -70,7 +74,7 @@
         return L.marker(latlng, {icon: locIcon});
     };
 
-    var locLayer = L.geoJson(diedLoc, {
+    var diedLocationsLayer = L.geoJson(diedLoc, {
         style : locStyle,
         onEachFeature: locOnEachFeature,
         pointToLayer: getLocMarker
