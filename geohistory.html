@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <title></title>
+  <link rel="stylesheet" href="lib/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.6.0/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <script src="data/locations.js" text="text/javascript"></script>
+  <script src="data/locations.geojson" type="text/javascript"></script>
+
+  <script src="lib/func.js"></script>
+  <script src="lib/style.js"></script>
+  <script src="lib/oef.js"></script>
+  <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+</head>
+<body>  
+  <div id='map'></div>  
+  <script>
+    var locId = getAllUrlParams().id;
+    var loc = data[locId];
+    //var mapInfo = loc.name + '</br>' + log.rayon;
+
+    // Опции карты
+    var mapOptions = {
+        //center: centerMap, // центр
+        maxZoom: 19,       // максимальный зум
+        zoom: 14,          // зум инициализации
+        attributionControl: true,
+        zoomControl: true
+    }
+
+    // Инициализация карты
+    var map = L.map('map', mapOptions);
+    map.setView([55.08, 95.229999999999819], 12);
+    // ==============================================================  
+    //                          КАРТЫ
+    // ==============================================================  
+    var filial = 'Brainstable';
+    var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'OpenStreetMap ' + filial
+        })
+        //.addTo(map);
+
+    var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
+            maxZoom: 20,
+            subdomains:['mt0','mt1','mt2','mt3'],
+            attribution: 'Google Hybrid ' + filial
+        })
+        //.addTo(map);   
+
+    var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
+            maxZoom: 20,
+            subdomains:['mt0','mt1','mt2','mt3'],
+            attribution: 'Google Satellite ' + filial
+        })
+        //.addTo(map);
+
+    var esriWorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: 'EsriWorldImagery ' + filial
+        })
+        .addTo(map);
+
+    var googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
+            maxZoom: 20,
+            subdomains:['mt0','mt1','mt2','mt3'],
+            attribution: 'Google Terrain ' + filial
+        });
+
+    var baseMaps = {
+        "ESRI Спутник" : esriWorldImagery,
+        "OSM Местность" : osmLayer,
+        "Google Гибрид" : googleHybrid,
+        "Google Спутник" : googleSat,
+        "Google Местность" : googleTerrain
+    };
+    
+    L.control.layers(baseMaps).addTo(map);
+
+    //================================================
+
+    var info = L.control({position: 'bottomright'});
+            info.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'info'); 
+                this.update();
+                return this._div;
+            };
+            info.update = function (props) {
+                this._div.innerHTML = "mapInfo";
+            };
+            info.addTo(map);
+//---------------------------
+
+var back = L.control({position: 'topleft'});
+            back.onAdd = function (map) {
+                this._div = L.DomUtil.create('div', 'card btn btn-primary'); 
+                this.update();
+                return this._div;
+            };
+            back.update = function (props) {
+                this._div.innerHTML = '<a href="index.html" title="Перейти на главную страницу">Назад</a>';
+            };
+            back.addTo(map);
+    
+
+  </script>
+</body>
+</html>
