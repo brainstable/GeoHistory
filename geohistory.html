@@ -12,6 +12,7 @@
   <script src="data/poligon_died_locations.geojson" type="text/javascript"></script>
   <script src="data/died_locations.geojson" type="text/javascript"></script>
   <script src="data/life_locations.geojson" type="text/javascript"></script>
+  <script src="data/roads.geojson" type="text/javascript"></script>
 
   <script src="lib/func.js"></script>
   <script src="lib/style.js"></script>
@@ -56,6 +57,8 @@
     //===============================================
 
     var poligonDiedLocationsLayer = L.geoJson(poligonDiedLocations).addTo(map);
+
+    var oldRoads = L.geoJson(roads).addTo(map);
 
     //===============================================
     function diedLocStyle(feature){
@@ -184,6 +187,7 @@
     //======================================================
 
     var overlayMaps = {
+        "Старые дороги": oldRoads,
         "Границы исчезнувших населенных пунктов" : poligonDiedLocationsLayer,
         "Исчезнувшие населенные пункты": diedLocationsLayer,
         "Существующие населенные пункты": locationsLayer
