@@ -9,6 +9,8 @@
 
   <script src="data/locations.js" text="text/javascript"></script>
   <script src="data/locations.geojson" type="text/javascript"></script>
+  <script src="data/died_locations.geojson" type="text/javascript"></script>
+  <script src="data/life_locations.geojson" type="text/javascript"></script>
 
   <script src="lib/func.js"></script>
   <script src="lib/style.js"></script>
@@ -22,7 +24,9 @@
   <script>
     var locId = getAllUrlParams().id;
     var loc = data[locId];
-    //var mapInfo = loc.name + '</br>' + log.rayon;
+    var x = loc.x;
+    var y = loc.y;
+    var mapInfo = loc.name + '</br>x = ' + x + '</br>y = ' + y;
 
     // Опции карты
     var mapOptions = {
@@ -35,47 +39,84 @@
 
     // Инициализация карты
     var map = L.map('map', mapOptions);
-    map.setView([55.08, 95.229999999999819], 12);
+    map.setView([y, x], 14);
+
+    //===============================================
+    function locStyle(feature){
+        return {
+            radiys : 1000,
+            weight : 2,
+            color : 'red'
+        }
+    };
+
+    function locOnEachFeature(feature, layer) {
+        var popupContent = '';
+        if (feature.properties && feature.properties.Name) {
+            popupContent = "<b>" + feature.properties.Name + "</b></br>";
+        }
+        layer.bindPopup(popupContent);
+        layer.bindTooltip(popupContent).openTooltip();
+    };
+
+    var locIcon = L.icon({
+        iconUrl: 'lib/images/marker-red.png',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+    });
+
+    function getLocMarker (feature, latlng) {      
+        return L.marker(latlng, {icon: locIcon});
+    };
+
+    var locLayer = L.geoJson(diedLoc, {
+        style : locStyle,
+        onEachFeature: locOnEachFeature,
+        pointToLayer: getLocMarker
+    })
+    .addTo(map);
     // ==============================================================  
     //                          КАРТЫ
     // ==============================================================  
-    var filial = 'Brainstable';
+    var autor = 'Mozgovoy Sergey';
+
     var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'OpenStreetMap ' + filial
+            attribution: 'OpenStreetMap ' + autor
         })
         //.addTo(map);
 
     var googleHybrid = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}',{
             maxZoom: 20,
             subdomains:['mt0','mt1','mt2','mt3'],
-            attribution: 'Google Hybrid ' + filial
+            attribution: 'Google Hybrid ' + autor
         })
-        //.addTo(map);   
+        .addTo(map);   
 
     var googleSat = L.tileLayer('http://{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}',{
             maxZoom: 20,
             subdomains:['mt0','mt1','mt2','mt3'],
-            attribution: 'Google Satellite ' + filial
+            attribution: 'Google Satellite ' + autor
         })
         //.addTo(map);
 
     var esriWorldImagery = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'EsriWorldImagery ' + filial
+            attribution: 'EsriWorldImagery ' + autor
         })
-        .addTo(map);
+        //.addTo(map);
 
     var googleTerrain = L.tileLayer('http://{s}.google.com/vt/lyrs=p&x={x}&y={y}&z={z}',{
             maxZoom: 20,
             subdomains:['mt0','mt1','mt2','mt3'],
-            attribution: 'Google Terrain ' + filial
+            attribution: 'Google Terrain ' + autor
         });
 
     var baseMaps = {
-        "ESRI Спутник" : esriWorldImagery,
-        "OSM Местность" : osmLayer,
         "Google Гибрид" : googleHybrid,
         "Google Спутник" : googleSat,
-        "Google Местность" : googleTerrain
+        "Google Местность" : googleTerrain,
+        "ESRI Спутник" : esriWorldImagery,
+        "OSM Местность" : osmLayer
     };
     
     L.control.layers(baseMaps).addTo(map);
@@ -83,27 +124,28 @@
     //================================================
 
     var info = L.control({position: 'bottomright'});
-            info.onAdd = function (map) {
-                this._div = L.DomUtil.create('div', 'info'); 
-                this.update();
-                return this._div;
-            };
-            info.update = function (props) {
-                this._div.innerHTML = "mapInfo";
-            };
-            info.addTo(map);
-//---------------------------
+    info.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'info'); 
+        this.update();
+        return this._div;
+    };
+    info.update = function (props) {
+        this._div.innerHTML = mapInfo;
+    };
+    info.addTo(map);
 
-var back = L.control({position: 'topleft'});
-            back.onAdd = function (map) {
-                this._div = L.DomUtil.create('div', 'card btn btn-primary'); 
-                this.update();
-                return this._div;
-            };
-            back.update = function (props) {
-                this._div.innerHTML = '<a href="index.html" title="Перейти на главную страницу">Назад</a>';
-            };
-            back.addTo(map);
+    //---------------------------
+
+    var back = L.control({position: 'topleft'});
+    back.onAdd = function (map) {
+        this._div = L.DomUtil.create('div', 'card btn btn-primary'); 
+        this.update();
+        return this._div;
+    };
+    back.update = function (props) {
+        this._div.innerHTML = '<a href="index.html" title="Перейти на главную страницу">Назад</a>';
+    };
+    back.addTo(map);
     
 
   </script>
