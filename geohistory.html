@@ -43,7 +43,46 @@
 
     //===============================================
 
+    function locOnEachFeature(feature, layer) {
+        var popupContent = '';
+        if (feature.properties && feature.properties.Name) {
+            popupContent = "<b>" + feature.properties.Name + "</b></br>";
+        }
+        layer.bindPopup(popupContent);
+        layer.bindTooltip(popupContent).openTooltip();
+    };
+
+
+    //===============================================
+
     var poligonDiedLocationsLayer = L.geoJson(poligonDiedLocations).addTo(map);
+
+    //===============================================
+    function diedLocStyle(feature){
+        return {
+            radiys : 1000,
+            weight : 2,
+            color : 'red'
+        }
+    };
+
+    var diedLocIcon = L.icon({
+        iconUrl: 'lib/images/marker_red.png',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -32]
+    });
+
+    function getDiedLocMarker (feature, latlng) {      
+        return L.marker(latlng, {icon: diedLocIcon});
+    };
+
+    var diedLocationsLayer = L.geoJson(diedLoc, {
+        style : diedLocStyle,
+        onEachFeature: locOnEachFeature,
+        pointToLayer: getDiedLocMarker
+    })
+    .addTo(map);
 
     //===============================================
     function locStyle(feature){
@@ -54,17 +93,8 @@
         }
     };
 
-    function locOnEachFeature(feature, layer) {
-        var popupContent = '';
-        if (feature.properties && feature.properties.Name) {
-            popupContent = "<b>" + feature.properties.Name + "</b></br>";
-        }
-        layer.bindPopup(popupContent);
-        layer.bindTooltip(popupContent).openTooltip();
-    };
-
     var locIcon = L.icon({
-        iconUrl: 'lib/images/marker-red.png',
+        iconUrl: 'lib/images/marker_blue.png',
         iconSize: [32, 32],
         iconAnchor: [16, 32],
         popupAnchor: [0, -32]
@@ -74,7 +104,7 @@
         return L.marker(latlng, {icon: locIcon});
     };
 
-    var diedLocationsLayer = L.geoJson(diedLoc, {
+    var locationsLayer = L.geoJson(lifeLoc, {
         style : locStyle,
         onEachFeature: locOnEachFeature,
         pointToLayer: getLocMarker
@@ -151,6 +181,14 @@
     };
     back.addTo(map);
     
+    //======================================================
+
+    var overlayMaps = {
+        "Границы исчезнувших населенных пунктов" : poligonDiedLocationsLayer,
+        "Исчезнувшие населенные пункты": diedLocationsLayer,
+        "Существующие населенные пункты": locationsLayer
+    };
+    L.control.layers([], overlayMaps).addTo(map);
 
   </script>
 </body>
